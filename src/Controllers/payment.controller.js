@@ -1,12 +1,6 @@
 const Payment = require('../models/Payment');
 const Invoice = require('../models/Invoice');
-const { createPaymentSchema } = require('../validations/payment.validation');
 
-/**
- * @route   POST /api/payments
- * @desc    Record a manual payment for an invoice
- * @access  Private (admin, manager, agent)
- */
 const createPayment = async (req, res) => {
   try {
     const { error, value } = createPaymentSchema.validate(req.body);
@@ -43,11 +37,6 @@ const createPayment = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/payments
- * @desc    Get all payments
- * @access  Private
- */
 const getPayments = async (req, res) => {
   try {
     const payments = await Payment.find()
@@ -60,11 +49,6 @@ const getPayments = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/payments/:id
- * @desc    Get a payment by ID
- * @access  Private
- */
 const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id)
@@ -79,11 +63,6 @@ const getPaymentById = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/payments/invoice/:invoiceId
- * @desc    Get all payments for a specific invoice
- * @access  Private
- */
 const getPaymentsByInvoice = async (req, res) => {
   try {
     const payments = await Payment.find({ invoice: req.params.invoiceId })

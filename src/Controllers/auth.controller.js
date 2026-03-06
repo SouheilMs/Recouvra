@@ -1,12 +1,6 @@
 const User = require('../models/User');
 const { generateToken } = require('../config/jwt');
-const { registerSchema, loginSchema } = require('../validations/user.validation');
 
-/**
- * @route   POST /api/auth/login
- * @desc    Authenticate user and return JWT token
- * @access  Public
- */
 const login = async (req, res) => {
   try {
     const { error, value } = loginSchema.validate(req.body);
@@ -35,11 +29,6 @@ const login = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/auth/me
- * @desc    Get currently authenticated user profile
- * @access  Private
- */
 const getMe = async (req, res) => {
   res.status(200).json({ success: true, data: req.user });
 };

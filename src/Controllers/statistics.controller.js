@@ -1,11 +1,6 @@
 const Client = require('../models/Client');
 const Invoice = require('../models/Invoice');
 
-/**
- * @route   GET /api/statistics
- * @desc    Get aggregated statistics for the dashboard
- * @access  Private
- */
 const getStatistics = async (req, res) => {
   try {
     const [

@@ -1,11 +1,5 @@
 const CollectionAction = require('../models/CollectionAction');
-const { createActionSchema, updateActionSchema } = require('../validations/collectionAction.validation');
 
-/**
- * @route   POST /api/actions
- * @desc    Create a new collection action
- * @access  Private (admin, manager, agent)
- */
 const createAction = async (req, res) => {
   try {
     const { error, value } = createActionSchema.validate(req.body);
@@ -26,11 +20,6 @@ const createAction = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/actions
- * @desc    Get all collection actions
- * @access  Private
- */
 const getActions = async (req, res) => {
   try {
     const actions = await CollectionAction.find()
@@ -44,11 +33,6 @@ const getActions = async (req, res) => {
   }
 };
 
-/**
- * @route   GET /api/actions/:id
- * @desc    Get a collection action by ID
- * @access  Private
- */
 const getActionById = async (req, res) => {
   try {
     const action = await CollectionAction.findById(req.params.id)
@@ -64,11 +48,6 @@ const getActionById = async (req, res) => {
   }
 };
 
-/**
- * @route   PUT /api/actions/:id
- * @desc    Update a collection action
- * @access  Private (admin, manager, agent)
- */
 const updateAction = async (req, res) => {
   try {
     const { error, value } = updateActionSchema.validate(req.body);
@@ -89,11 +68,6 @@ const updateAction = async (req, res) => {
   }
 };
 
-/**
- * @route   DELETE /api/actions/:id
- * @desc    Delete a collection action
- * @access  Private (admin, manager, agent)
- */
 const deleteAction = async (req, res) => {
   try {
     const action = await CollectionAction.findByIdAndDelete(req.params.id);
