@@ -1,6 +1,10 @@
 const Payment = require('../models/Payment');
 const Invoice = require('../models/Invoice');
+const { createPaymentSchema } = require('../validations/payment.validation');
 
+/**
+ * Record a manual payment for an invoice
+ */
 const createPayment = async (req, res) => {
   try {
     const { error, value } = createPaymentSchema.validate(req.body);
@@ -37,6 +41,9 @@ const createPayment = async (req, res) => {
   }
 };
 
+/**
+ * Get all payments
+ */
 const getPayments = async (req, res) => {
   try {
     const payments = await Payment.find()
@@ -49,6 +56,9 @@ const getPayments = async (req, res) => {
   }
 };
 
+/**
+ * Get a payment by ID
+ */
 const getPaymentById = async (req, res) => {
   try {
     const payment = await Payment.findById(req.params.id)
@@ -63,6 +73,9 @@ const getPaymentById = async (req, res) => {
   }
 };
 
+/**
+ * Get all payments for a specific invoice
+ */
 const getPaymentsByInvoice = async (req, res) => {
   try {
     const payments = await Payment.find({ invoice: req.params.invoiceId })

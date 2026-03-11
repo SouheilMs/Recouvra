@@ -1,6 +1,9 @@
 const Client = require('../models/Client');
 const Invoice = require('../models/Invoice');
 
+/**
+ * Get aggregated statistics for the dashboard
+ */
 const getStatistics = async (req, res) => {
   try {
     const [

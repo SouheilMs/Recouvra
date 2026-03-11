@@ -1,5 +1,9 @@
 const CollectionAction = require('../models/CollectionAction');
+const { createActionSchema, updateActionSchema } = require('../validations/collectionAction.validation');
 
+/**
+ * Create a new collection action
+ */
 const createAction = async (req, res) => {
   try {
     const { error, value } = createActionSchema.validate(req.body);
@@ -20,6 +24,9 @@ const createAction = async (req, res) => {
   }
 };
 
+/**
+ * Get all collection actions
+ */
 const getActions = async (req, res) => {
   try {
     const actions = await CollectionAction.find()
@@ -33,6 +40,9 @@ const getActions = async (req, res) => {
   }
 };
 
+/**
+ * Get a collection action by ID
+ */
 const getActionById = async (req, res) => {
   try {
     const action = await CollectionAction.findById(req.params.id)
@@ -48,6 +58,9 @@ const getActionById = async (req, res) => {
   }
 };
 
+/**
+ * Update a collection action
+ */
 const updateAction = async (req, res) => {
   try {
     const { error, value } = updateActionSchema.validate(req.body);
@@ -68,6 +81,9 @@ const updateAction = async (req, res) => {
   }
 };
 
+/**
+ * Delete a collection action
+ */
 const deleteAction = async (req, res) => {
   try {
     const action = await CollectionAction.findByIdAndDelete(req.params.id);
