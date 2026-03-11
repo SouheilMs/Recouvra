@@ -1,111 +1,72 @@
 const User = require('../models/User');
+const { registerSchema } = require('../validations/user.validation');
 
-// Create User
+/**
+ * Create a new user (admin only)
+ */
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-
-    // Vérifier si l'email existe déjà
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'Email already in use.',
-      });
+    const { error, value } = registerSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ success: false, message: error.details[0].message });
     }
 
-    // Création de l'utilisateur
-    const user = await User.create({ name, email, password, role });
+    const existingUser = await User.findOne({ email: value.email });
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: 'Email already in use.' });
+    }
 
+    const user = await User.create(value);
     res.status(201).json({
       success: true,
       message: 'User created successfully.',
-      data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      data: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Get All Users
+/**
+ * Get all users (admin only)
+ */
 const getUsers = async (req, res) => {
   try {
     const users = await User.find().select('-password');
-    res.status(200).json({
-      success: true,
-      data: users,
-    });
+    res.status(200).json({ success: true, data: users });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Get User By ID
+/**
+ * Get a user by ID (admin only)
+ */
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found.',
-      });
+      return res.status(404).json({ success: false, message: 'User not found.' });
     }
-
-    res.status(200).json({
-      success: true,
-      data: user,
-    });
+    res.status(200).json({ success: true, data: user });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Delete User
+/**
+ * Delete a user (admin only)
+ */
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found.',
-      });
+      return res.status(404).json({ success: false, message: 'User not found.' });
     }
-
-    res.status(200).json({
-      success: true,
-      message: 'User deleted successfully.',
-    });
+    res.status(200).json({ success: true, message: 'User deleted successfully.' });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-module.exports = {
-  createUser,
-  getUsers,
-  getUserById,
-  deleteUser,
-};
+module.exports = { createUser, getUsers, getUserById, deleteUser };

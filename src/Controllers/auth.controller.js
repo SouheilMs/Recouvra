@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const { generateToken } = require('../config/jwt');
+const { registerSchema, loginSchema } = require('../validations/user.validation');
 
+/**
+ * Authenticate user and return JWT token
+ */
 const login = async (req, res) => {
   try {
     const { error, value } = loginSchema.validate(req.body);
@@ -29,6 +33,9 @@ const login = async (req, res) => {
   }
 };
 
+/**
+ * Get currently authenticated user profile
+ */
 const getMe = async (req, res) => {
   res.status(200).json({ success: true, data: req.user });
 };

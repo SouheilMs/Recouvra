@@ -1,131 +1,85 @@
 const Invoice = require('../models/Invoice');
+const { createInvoiceSchema, updateInvoiceSchema } = require('../validations/invoice.validation');
 
-// Create Invoice
+/**
+ * Create a new invoice
+ */
 const createInvoice = async (req, res) => {
   try {
-    const invoice = await Invoice.create(req.body);
+    const { error, value } = createInvoiceSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ success: false, message: error.details[0].message });
+    }
 
-    const populatedInvoice = await invoice.populate('client', 'name email');
-
-    res.status(201).json({
-      success: true,
-      message: 'Invoice created successfully.',
-      data: populatedInvoice,
-    });
+    const invoice = await Invoice.create(value);
+    const populated = await invoice.populate('client', 'name email');
+    res.status(201).json({ success: true, message: 'Invoice created successfully.', data: populated });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Get All Invoices
+/**
+ * Get all invoices
+ */
 const getInvoices = async (req, res) => {
   try {
-    const invoices = await Invoice.find()
-      .populate('client', 'name email')
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      data: invoices,
-    });
+    const invoices = await Invoice.find().populate('client', 'name email').sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: invoices });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Get Invoice By ID
+/**
+ * Get an invoice by ID
+ */
 const getInvoiceById = async (req, res) => {
   try {
-    const invoice = await Invoice.findById(req.params.id)
-      .populate('client', 'name email');
-
+    const invoice = await Invoice.findById(req.params.id).populate('client', 'name email');
     if (!invoice) {
-      return res.status(404).json({
-        success: false,
-        message: 'Invoice not found.',
-      });
+      return res.status(404).json({ success: false, message: 'Invoice not found.' });
     }
-
-    res.status(200).json({
-      success: true,
-      data: invoice,
-    });
+    res.status(200).json({ success: true, data: invoice });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Update Invoice
+/**
+ * Update an invoice
+ */
 const updateInvoice = async (req, res) => {
   try {
-    const invoice = await Invoice.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).populate('client', 'name email');
-
-    if (!invoice) {
-      return res.status(404).json({
-        success: false,
-        message: 'Invoice not found.',
-      });
+    const { error, value } = updateInvoiceSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ success: false, message: error.details[0].message });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Invoice updated successfully.',
-      data: invoice,
-    });
+    const invoice = await Invoice.findByIdAndUpdate(req.params.id, value, { new: true, runValidators: true })
+      .populate('client', 'name email');
+    if (!invoice) {
+      return res.status(404).json({ success: false, message: 'Invoice not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Invoice updated successfully.', data: invoice });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-// Delete Invoice
+/**
+ * Delete an invoice
+ */
 const deleteInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findByIdAndDelete(req.params.id);
-
     if (!invoice) {
-      return res.status(404).json({
-        success: false,
-        message: 'Invoice not found.',
-      });
+      return res.status(404).json({ success: false, message: 'Invoice not found.' });
     }
-
-    res.status(200).json({
-      success: true,
-      message: 'Invoice deleted successfully.',
-    });
+    res.status(200).json({ success: true, message: 'Invoice deleted successfully.' });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error.',
-      error: err.message,
-    });
+    res.status(500).json({ success: false, message: 'Server error.', error: err.message });
   }
 };
 
-module.exports = {
-  createInvoice,
-  getInvoices,
-  getInvoiceById,
-  updateInvoice,
-  deleteInvoice,
-};
+module.exports = { createInvoice, getInvoices, getInvoiceById, updateInvoice, deleteInvoice };
